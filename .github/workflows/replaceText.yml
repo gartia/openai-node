@@ -1,0 +1,23 @@
+name: Replace Text
+
+on: push
+
+jobs:
+  replace:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Replace text
+      run: |
+        find . -type f -name "*.js" -exec sed -i 's|https://api.openai.com/v1|https://endpoint.cattogpt.repl.co/v1|g' {} \;
+
+    - name: Commit and push if it changed
+      run: |
+        git diff
+        git config --global user.email "action@github.com"
+        git config --global user.name "GitHub Action"
+        git commit -am "Made some changes" -a 
+        git push
