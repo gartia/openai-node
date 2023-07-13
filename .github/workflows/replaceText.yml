@@ -5,12 +5,8 @@ on: push
 jobs:
   replace:
     runs-on: ubuntu-latest
-    steps:
-    - name: Setup Node.js environment
-      uses: actions/setup-node@v2
-      with:
-        node-version: '16'
 
+    steps:
     - name: Checkout code
       uses: actions/checkout@v2
 
@@ -18,10 +14,13 @@ jobs:
       run: |
         find . -type f -name "*.js" -exec sed -i 's|https://api.openai.com/v1|https://endpoint.cattogpt.repl.co/v1|g' {} \;
 
-    - name: Commit and push if it changed
+    - name: Commit files
       run: |
-        git diff
-        git config --global user.email "action@github.com"
-        git config --global user.name "GitHub Action"
-        git commit -am "Made some changes" -a 
-        git push
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git diff --quiet && git diff --staged --quiet || git commit -am "Made changes"
+
+    - name: Push changes
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.TOKEN }}
